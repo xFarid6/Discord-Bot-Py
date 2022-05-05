@@ -43,6 +43,15 @@ Context.author returns the Member or User that called the command.
 Context.send() to send a message to the channel the command was used in.
 """
 
+initial_extensions = ['cogs.admin',
+                      'cogs.members',
+                      'cogs.general',
+                      'cogs.owner',]
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        bot.load_extension(extension)
+
 
 async def get_quote_aio():
     """
@@ -81,6 +90,10 @@ async def nine_nine(ctx, help='Responds with a random quote from Brooklyn 99'):
 
     response = random.choice(brooklyn_99_quotes)
     await ctx.send(response)
+
+    # Changes our bots Playing Status. type=1(streaming) for a standard game you could remove type and url.
+    await bot.change_presence(game=discord.Game(name='Cogs Example', type=1, url='https://twitch.tv/kraken'))
+    print(f'Successfully logged in and booted...!')
 
 
 @bot.command(name='roll_dice', help='Simulates rolling dice.')
@@ -436,4 +449,4 @@ async def on_message_edit(self, before, after):
 """
 
 
-bot.run(TOKEN)
+bot.run(TOKEN, bot=True, reconnect=True)
