@@ -29,7 +29,6 @@ There are a number of utility commands being showcased here.'''
 # intents = discord.Intents.default()
 # intents.members = True
 
-bot = commands.Bot(command_prefix=PREFIX, description=description) # intents=intents
 
 """
 https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html#invocation-context
@@ -44,13 +43,17 @@ Context.send() to send a message to the channel the command was used in.
 """
 
 initial_extensions = ['cogs.admin',
-                      'cogs.members',
                       'cogs.general',
+                      'cogs.members',
+                      'cogs.misc',
                       'cogs.owner',]
 
+bot = commands.Bot(command_prefix=PREFIX, description=description) # intents=intents
+# print(dir(bot))
 if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
+
 
 @bot.event
 async def on_ready():
@@ -61,5 +64,41 @@ async def on_ready():
     for guild in bot.guilds:
         print(f'{guild.name}(id: {guild.id})')
     print('------')
+
+    # Setting `Playing ` status
+    await bot.change_presence(activity=discord.Game(name="a game"))
+
+    # Setting `Streaming ` status
+    #  bot.change_presence(activity=discord.Streaming(name="My Stream", url=my_twitch_url))
+
+    # Setting `Listening ` status
+    # await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="a song"))
+
+    # Setting `Watching ` status
+    # await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="a movie"))
+
+    # Changes our bots Playing Status. type=1(streaming) for a standard game you could remove type and url.
+    # await bot.change_presence(game=discord.Game(name='Cogs Example', type=1, url='https://twitch.tv/kraken'))
+    # print(f'Successfully logged in and booted...!')
+
+
+async def on_message(self, message):
+    # we do not want the bot to reply to itself
+    if message.author.id == self.user.id:
+        return
+
+    if message.content.startswith('!hello'):
+        await message.reply('Hello!', mention_author=True)
+        
+    if message.content.startswith('!p'):
+        # if message.channel.id != 966316388924932217:
+        if message.channel.name == 'musica-qua-plz':
+            await message.channel.send('https://www.youtube.com/watch?v=i5-0F5E-mqc')
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.CheckFailure):
+        await ctx.send('You do not have the correct role for this command.')
+
 
 bot.run(TOKEN) # bot=True, reconnect=True
