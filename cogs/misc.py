@@ -65,26 +65,5 @@ class MiscCog(commands.Cog):
         await ctx.send(f'{buy_sell.capitalize()}ing {amount} {item}(s)!')
 
 
-    @commands.command()
-    async def upload(ctx, attachment: Optional[discord.Attachment]):
-        if attachment is None:
-            await ctx.send('You did not upload anything!')
-        else:
-            await ctx.send(f'You have uploaded <{attachment.url}>')
-
-
-    @commands.command()
-    async def upload_many(
-        ctx,
-        first: discord.Attachment,
-        second: Optional[discord.Attachment],
-    ):
-        if second is None:
-            files = [first.url]
-        else:
-            files = [first.url, second.url]
-
-        await ctx.send(f'You uploaded: {" ".join(files)}')
-
 def setup(bot):
     bot.add_cog(MiscCog(bot))

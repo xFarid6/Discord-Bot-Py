@@ -42,11 +42,13 @@ Context.author returns the Member or User that called the command.
 Context.send() to send a message to the channel the command was used in.
 """
 
-initial_extensions = ['cogs.admin',
+initial_extensions = ['cogs.actions',
+                      'cogs.admin',
                       'cogs.general',
                       'cogs.members',
                       'cogs.misc',
-                      'cogs.owner',]
+                      'cogs.owner',
+                      'cogs.slapper',]
 
 bot = commands.Bot(command_prefix=PREFIX, description=description) # intents=intents
 # print(dir(bot))
@@ -94,6 +96,39 @@ async def on_message(self, message):
         # if message.channel.id != 966316388924932217:
         if message.channel.name == 'musica-qua-plz':
             await message.channel.send('https://www.youtube.com/watch?v=i5-0F5E-mqc')
+
+    if message.content.startswith('!deleteme'):
+        msg = await message.channel.send('I will delete myself now...')
+        await msg.delete()
+
+        # this also works
+        await message.channel.send('Goodbye in 3 seconds...', delete_after=3.0)
+
+    if message.content.startswith('!editme'):
+        msg = await message.channel.send('10')
+        await asyncio.sleep(3.0)
+        await msg.edit(content='40')
+
+
+@bot.event
+async def on_message_edit(self, before, after):
+    fmt = '**{0.author}** edited their message:\n{0.content} -> {1.content}'
+    await before.channel.send(fmt.format(before, after))
+
+
+@bot.event
+async def on_member_join(self, member):
+    guild = member.guild
+    if guild.system_channel is not None:
+        to_send = 'Welcome {0.mention} to {1.name}!'.format(member, guild)
+        await guild.system_channel.send(to_send)
+
+
+@bot.event
+async def on_message_delete(self, message):
+    fmt = '{0.author} has deleted the message: {0.content}'
+    await message.channel.send(fmt.format(message))
+
 
 @bot.event
 async def on_command_error(ctx, error):

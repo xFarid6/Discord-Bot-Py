@@ -75,26 +75,9 @@ class MembersCog(commands.Cog):
 
 
     @commands.command()
-    async def test(ctx, *args):
-        arguments = ', '.join(args)
-        await ctx.send(f'{len(args)} arguments: {arguments}')
-
-
-    @commands.command(description='For when you wanna settle the score some other way')
-    async def choose(ctx, *choices: str):
-        """Chooses between multiple choices."""
-        await ctx.send(random.choice(choices))
-
-    @commands.command()
-    async def repeat(ctx, times: int, content='repeating...'):
-        """Repeats a message multiple times."""
-        for i in range(times):
-            await ctx.send(content)
-
-    @commands.command()
-    async def joined(ctx, member: discord.Member):
-        """Says when a member joined."""
-        await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
+    async def joined(ctx, *, member: discord.Member):
+        await ctx.send(f'{member} joined on {member.joined_at}')
+    
 
     @commands.group()
     async def cool(ctx):

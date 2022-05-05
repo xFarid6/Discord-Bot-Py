@@ -38,7 +38,19 @@ class GeneralCog(commands.Cog):
     async def cool_bot(self, ctx):
         """Is the bot cool?"""
         await ctx.send('This bot is cool. :)')
+
+
+    @commands.command()
+    async def test(ctx, *args):
+        arguments = ', '.join(args)
+        await ctx.send(f'{len(args)} arguments: {arguments}')
         
+
+    @commands.command(name='bot')
+    async def _bot(ctx):
+        """Is the bot cool?"""
+        await ctx.send('Yes, the bot is cool.')
+
 
 def setup(bot):
     bot.add_cog(GeneralCog(bot))
