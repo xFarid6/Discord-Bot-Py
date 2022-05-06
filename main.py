@@ -26,8 +26,8 @@ An example bot to showcase the discord.ext.commands extension
 module.
 There are a number of utility commands being showcased here.'''
 
-# intents = discord.Intents.default()
-# intents.members = True
+intents = discord.Intents.default().all()
+intents.members = True
 
 
 """
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         bot.load_extension(extension)
 
 
-@bot.event
+@bot.listen()
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     print(bot.user.id)
@@ -68,7 +68,7 @@ async def on_ready():
     print('------')
 
     # Setting `Playing ` status
-    await bot.change_presence(activity=discord.Game(name="a game"))
+    await bot.change_presence(activity=discord.Game(name="pygame, discord-py"))
 
     # Setting `Streaming ` status
     #  bot.change_presence(activity=discord.Streaming(name="My Stream", url=my_twitch_url))
@@ -84,53 +84,64 @@ async def on_ready():
     # print(f'Successfully logged in and booted...!')
 
 
-async def on_message(self, message):
+@bot.listen()
+async def on_message(message):
     # we do not want the bot to reply to itself
-    if message.author.id == self.user.id:
-        return
+    if message.author.id == bot.user.id: return
+    if message.author.bot: return
 
-    if message.content.startswith('!hello'):
-        await message.reply('Hello!', mention_author=True)
-        
-    if message.content.startswith('!p'):
-        # if message.channel.id != 966316388924932217:
-        if message.channel.name == 'musica-qua-plz':
-            await message.channel.send('https://www.youtube.com/watch?v=i5-0F5E-mqc')
+    if message.content.startswith(PREFIX + 'hello'):
+        msg = 'Hello {0.author.mention}'.format(message)
+        await message.channel.send(msg)
 
-    if message.content.startswith('!deleteme'):
-        msg = await message.channel.send('I will delete myself now...')
-        await msg.delete()
+    if message.content.startswith(PREFIX + 'deleteme'):
+        await message.delete()
 
-        # this also works
-        await message.channel.send('Goodbye in 3 seconds...', delete_after=3.0)
+    # if message.content.startswith(PREFIX + 'editme'): # cannot edit other's messages, dummy
+        # await message.edit(content='Edited!')
+    if message.content == PREFIX + 'lenny':
+        await message.delete()
+        await message.channel.send('( ͡° ͜ʖ ͡°)')
 
-    if message.content.startswith('!editme'):
-        msg = await message.channel.send('10')
-        await asyncio.sleep(3.0)
-        await msg.edit(content='40')
+    if message.content.startswith(PREFIX + 'reactme'):
+        await message.add_reaction('👍')
+
+    # if a message starting with !p is sent outside the musica-qua-plz channel, delete the message
+    if message.content.startswith('!p') and message.channel.name != 'musica-qua-plz':
+        # find the last message sent by L'erede della musica
+        await asyncio.sleep(10)
+        # last_message = await message.channel.history(limit=1).flatten()
+
+        await message.channel.send('!leave')
+        await asyncio.sleep(3)
+
+        await message.channel.send('!p https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+        await message.channel.send('Dovresti mettere la musica dal canale apposta.\n Altrimenti vieni Rickrollato!')
+        await message.channel.send('!skip')
 
 
-@bot.event
-async def on_message_edit(self, before, after):
+@bot.listen()
+async def on_message_edit(before, after):
     fmt = '**{0.author}** edited their message:\n{0.content} -> {1.content}'
     await before.channel.send(fmt.format(before, after))
 
 
-@bot.event
-async def on_member_join(self, member):
+@bot.listen()
+async def on_member_join(member):
     guild = member.guild
     if guild.system_channel is not None:
         to_send = 'Welcome {0.mention} to {1.name}!'.format(member, guild)
         await guild.system_channel.send(to_send)
 
 
-@bot.event
-async def on_message_delete(self, message):
+@bot.listen()
+async def on_message_delete(message):
     fmt = '{0.author} has deleted the message: {0.content}'
     await message.channel.send(fmt.format(message))
 
 
-@bot.event
+@bot.listen()
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send('You do not have the correct role for this command.')

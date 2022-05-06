@@ -87,6 +87,13 @@ class MembersCog(commands.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
 
+
+    @commands.command()
+    async def report(ctx, *, member: discord.Member, reason: str):
+        """Reports a user"""
+        await ctx.send(f'{member} has been reported for {reason}')
+        
+
 # The setup fucntion below is neccesarry. Remember we give bot.add_cog() the name of the class in this case MembersCog.
 # When we load the cog, we use the name of the file.
 def setup(bot):
